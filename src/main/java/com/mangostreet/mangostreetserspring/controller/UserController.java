@@ -1,21 +1,32 @@
 package com.mangostreet.mangostreetserspring.controller;
 
-import com.mangostreet.mangostreetserspring.entity.User;
-import com.mangostreet.mangostreetserspring.repository.Userrepository;
+import com.mangostreet.mangostreetserspring.dao.UserRepository;
+import com.mangostreet.mangostreetserspring.domain.UserDO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
 
     @Autowired
-    Userrepository userrepository;
+    UserRepository userRepository;
 
     @GetMapping("/user/{id}")
-    public User getUser(@PathVariable("id") Integer id){
-        User user = userrepository.findById(1).orElse(null);
+    public UserDO getUser(@PathVariable("id") Integer id){
+        UserDO user = userRepository.findById(id).orElse(null);
+        return user;
+    }
+
+    @RequestMapping(value = "/user/add", method = RequestMethod.GET)
+    @ResponseBody
+    public UserDO addUser(@RequestParam String username,
+                          @RequestParam String password){
+
+        UserDO user = new UserDO();
+        user.setId(1);
+        user.setUserName(username);
+        user.setPassword(password);
+        userRepository.save(user);
         return user;
     }
 }
