@@ -13,26 +13,7 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("/user/{id}")
-    public UserDO getUser(@PathVariable("id") Integer id){
-        UserDO user = userRepository.findById(id).orElse(null);
-        return user;
-    }
-
-    @RequestMapping(value = "/user/add", method = RequestMethod.GET)
-    @ResponseBody
-    public UserDO addUser(@RequestParam String username,
-                          @RequestParam String password){
-
-        UserDO user = new UserDO();
-        user.setId(1);
-        user.setUserName(username);
-        user.setPassword(password);
-        userRepository.save(user);
-        return user;
-    }
-
-    @RequestMapping(value = "/auth/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
     @ResponseBody
     public AjaxResponse authLogin(@RequestParam String username,
                                   @RequestParam String password){
@@ -45,7 +26,6 @@ public class UserController {
         UserDO user = userRepository.findOne(example).orElse(null);
 
         if (user == null){
-
             UserDO uu =new UserDO();
             uu.setUserName(username);
             uu.setPassword(password);
@@ -55,6 +35,5 @@ public class UserController {
         } else {
             return AjaxResponse.success(user);
         }
-
     }
 }
