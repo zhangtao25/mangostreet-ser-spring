@@ -1,39 +1,41 @@
 package com.mangostreet.mangostreetserspring.controller;
 
-import com.mangostreet.mangostreetserspring.config.exception.AjaxResponse;
-import com.mangostreet.mangostreetserspring.dao.UserRepository;
-import com.mangostreet.mangostreetserspring.domain.UserDO;
+import com.mangostreet.mangostreetserspring.VO.ResultVO;
+import com.mangostreet.mangostreetserspring.dataobject.User;
+import com.mangostreet.mangostreetserspring.dataobject.Userinfo;
+import com.mangostreet.mangostreetserspring.dto.TokenDTO;
+import com.mangostreet.mangostreetserspring.form.LoginForm;
+import com.mangostreet.mangostreetserspring.service.UserService;
+import com.mangostreet.mangostreetserspring.utils.ResultVOUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+//import javax.xml.transform.Result;
+
 @RestController
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    private UserService userService;
 
-    @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
-    @ResponseBody
-    public AjaxResponse authLogin(@RequestParam String username,
-                                  @RequestParam String password){
+    @PostMapping("/auth")
+    public ResultVO detail (
+            @RequestParam(value = "userPhone", required = false) String userPhone,
+            @RequestParam(value = "userToken", required = false) String userToken){
 
-        UserDO u =new UserDO();
-        u.setUserName(username);
-        u.setPassword(password);
-        Example<UserDO> example = Example.of(u);
+        Userinfo userinfo = userService.findByUserPhoneAndUserToken(userPhone,userToken);
+        return ResultVOUtil.success(userinfo);
+    }
 
-        UserDO user = userRepository.findOne(example).orElse(null);
+    @PostMapping("/login")
+    public ResultVO login (@RequestBody LoginForm jsonParam){
 
-        if (user == null){
-            UserDO uu =new UserDO();
-            uu.setUserName(username);
-            uu.setPassword(password);
-            uu.setId(2);
-            userRepository.save(uu);
-            return AjaxResponse.success();
-        } else {
-            return AjaxResponse.success(user);
-        }
+        String userPhone = jsonParam.getUserPhone();
+        String userPassword = jsonParam.getUserPassword();
+
+        TokenDTO tokenDTO = userService.findByUserPhoneAndPwd(userPhone,userPassword);
+        return ResultVOUtil.success(tokenDTO);
     }
 }
