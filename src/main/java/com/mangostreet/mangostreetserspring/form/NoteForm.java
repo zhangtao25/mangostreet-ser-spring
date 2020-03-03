@@ -8,4 +8,5 @@ public class NoteForm {
     private String noteTitle;
     private String noteDescription;
     private String noteContent;
+    private String imageUrl;
 }
